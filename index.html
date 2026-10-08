@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f6f4ef" />
+    <meta name="description" content="简单记录每天工时，自动汇总月工时和工资。" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="./icon.svg" />
+    <link rel="stylesheet" href="./styles.css" />
+    <title>工时日历</title>
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="./" aria-label="工时日历首页">
+          <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><rect x="5" y="7" width="22" height="20" rx="6"/><path d="M10 4v6M22 4v6M5 13h22"/><path d="m12 19 2.5 2.5L21 15"/></svg></span>
+          <span class="brand-name">工时日历<span>WORK LOG</span></span>
+        </a>
+        <button id="install-button" class="install-button" type="button" hidden>安装应用</button>
+        <span id="saved-indicator" class="saved-indicator" role="status"><span class="saved-dot"></span>已保存在本机</span>
+      </header>
+
+      <section class="intro" aria-labelledby="page-title">
+        <p class="eyebrow"><span class="eyebrow-line"></span>每天记一点，月底更清楚</p>
+        <h1 id="page-title">我的工时</h1>
+        <p class="intro-note">点选日期，轻松记下今天的工作。</p>
+      </section>
+
+      <section class="summary-card" aria-label="本月汇总">
+        <div class="summary-top"><span class="summary-period"><span class="summary-dot"></span><span id="summary-month">本月汇总</span></span><span class="rate-label">按 ¥10 / 小时</span></div>
+        <div class="summary-main">
+          <div class="hours-block"><span class="summary-caption">累计工时</span><div class="metric"><span id="total-hours">0</span><span class="metric-unit">小时</span></div></div>
+          <div class="summary-divider"></div>
+          <div class="pay-block"><span class="summary-caption">预估工资</span><div class="pay-value"><span class="currency">¥</span><span id="total-pay">0</span></div></div>
+        </div>
+        <div class="summary-bottom"><span><span class="tiny-spark" aria-hidden="true">✳</span> 已记录 <b id="days-count">0</b> 天</span><span>工时会自动保存</span></div>
+      </section>
+
+      <section class="calendar-card" aria-labelledby="calendar-heading">
+        <div class="calendar-head">
+          <div><p class="section-kicker">日历</p><h2 id="calendar-heading" aria-live="polite"></h2></div>
+          <div class="month-controls" aria-label="切换月份">
+            <button id="prev-month" class="icon-button" type="button" aria-label="上个月"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.5 5-7 7 7 7"/></svg></button>
+            <button id="today-month" class="today-button" type="button">今天</button>
+            <button id="next-month" class="icon-button" type="button" aria-label="下个月"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9.5 5 7 7-7 7"/></svg></button>
+          </div>
+        </div>
+
+        <div class="weekdays" aria-hidden="true">
+          <span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span class="weekend">六</span><span class="weekend">日</span>
+        </div>
+        <div id="calendar-grid" class="calendar-grid" role="grid" aria-label="本月日期"></div>
+        <div class="calendar-legend"><span><i class="legend-dot legend-recorded"></i>已记录工时</span><span><i class="legend-dot legend-today"></i>今天</span></div>
+      </section>
+
+      <p class="privacy-note"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="4" y="8" width="12" height="9" rx="2"/><path d="M7 8V6a3 3 0 0 1 6 0v2m-3 4v2"/></svg>记录只保存在这台手机的浏览器中</p>
+      <footer class="app-footer">把工时理清楚，给每一天一个交代。</footer>
+    </main>
+
+    <div id="sheet-backdrop" class="sheet-backdrop" hidden></div>
+    <section id="hours-sheet" class="hours-sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title" hidden>
+      <div class="sheet-handle" aria-hidden="true"></div>
+      <div class="sheet-heading">
+        <div><p class="section-kicker">编辑记录</p><h2 id="sheet-title"></h2></div>
+        <button id="close-sheet" class="icon-button close-button" type="button" aria-label="完成编辑"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+      </div>
+      <p class="sheet-help">选择这一天的工作时长</p>
+      <div class="hours-picker" aria-label="工时选择器">
+        <button id="decrease-hours" class="step-button" type="button" aria-label="减少半小时">−</button>
+        <div class="selected-hours" aria-live="polite"><span id="selected-hours">0</span><span>小时</span></div>
+        <button id="increase-hours" class="step-button" type="button" aria-label="增加半小时">+</button>
+      </div>
+      <div class="range-hint"><span>0 小时</span><span>每次增加半小时</span><span>24 小时</span></div>
+      <p class="quick-label">常用时长</p>
+      <div id="quick-hours" class="quick-hours" aria-label="常用工时">
+        <button type="button" data-hours="4">4 小时</button><button type="button" data-hours="6">6 小时</button><button type="button" data-hours="8">8 小时</button><button type="button" data-hours="10">10 小时</button><button type="button" data-hours="12">12 小时</button>
+      </div>
+      <p id="save-note" class="save-note" role="status">每次调整都会自动保存</p>
+      <button id="done-button" class="done-button" type="button">完成</button>
+    </section>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script src="./app.js" defer></script>
+  </body>
+</html>
+
